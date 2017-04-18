@@ -1,18 +1,50 @@
-function [] = biopac_import(INFILENAME, OUTFILENAME)
+function [pspm_filename] = biopac_import(INFILENAME, OUTFILENAME)
 
+global verbose
 %% biopac_2_matlab
 % import the biopac text files into a MATLAB table
-data = biopactxt_2_matlab(INFILENAME);
+
+if verbose
+    tic
+    fprintf('\nStep 1: Biopac Text file --> MATLAB...\n')
+end
+if ~exist(OUTFILENAME, 'file')
+    data = biopactxt_2_matlab(INFILENAME);
+end
+if verbose
+    toc
+end
 
 %% write a pspm formatted text file
 % write the data to a pspm formatted text file
-writetable(data, OUTFILENAME, 'Delimiter', '\t');
+if verbose
+    tic
+    fprintf('\nStep 2: MATLAB --> Simple Text File...\n')
+end
+if ~exist(OUTFILENAME, 'file')
+    writetable(data, OUTFILENAME, 'Delimiter', '\t');
+end
+if verbose
+    toc
+end
 
 %% import into pspm
 % import data into PsPM. PsPM will create a .mat file of the data for
 % further processing.
-matlabbatch = set_pspmimport(OUTFILENAME);
-scr_jobman('interactive', matlabbatch);
+
+if verbose
+    tic
+    fprintf('\nStep 3: Simple Text File --> PsPM .mat file...\n')
+end
+[path,filename,~] = fileparts(OUTFILENAME);
+pspm_filename = fullfile(path, ['scr_' filename '.mat']);
+if ~exist(pspm_filename, 'file')
+    matlabbatch = set_pspmimport(OUTFILENAME);
+    scr_jobman('run', matlabbatch);
+end
+if verbose
+    toc
+end
 
 %% subfunctions
 
