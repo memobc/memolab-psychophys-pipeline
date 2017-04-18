@@ -1,4 +1,4 @@
-function data = importfile(filename, startRow, endRow)
+function data = biopactxt_2_matlab(filename, startRow, endRow)
 %IMPORTFILE Import numeric data from a text file as a matrix.
 %   DATA = IMPORTFILE(FILENAME) Reads data from text file FILENAME for the
 %   default selection.
@@ -16,7 +16,7 @@ function data = importfile(filename, startRow, endRow)
 %% Initialize variables.
 delimiter = ',';
 if nargin<=2
-    startRow = 53;
+    startRow = 54;
     endRow = inf;
 end
 
