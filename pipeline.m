@@ -84,7 +84,12 @@ end
 if verbose
     fprintf('\nTask 3: Downsample...\n') 
 end
-pspm_downsample(pspm_filename);
+downsample_data_filename = pspm_downsample(pspm_filename);
 
 %%
 %%% Task 4:
+if verbose
+    fprintf('\nTask 4: Downsample...\n') 
+end
+downsample_data_filename = pspm_downsample(pspm_filename);
+
