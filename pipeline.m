@@ -1,9 +1,10 @@
 %%% Welcome to the MICE PsychoPhys Pipeline %%%
 % Written by Kyle Kurkela, April 2017
 
-%%% Step 0: Study Parameters
+%%
+%%% Study Parameters
 
-rootdir  = '/Volumes/Psychology/MemoLab/MICE/MICE_fMRI/Data/';
+rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/Data/';
 
 % Subjects structure, with the fields:
 %   .flag   = 1 if you want to specify the ids to run in the .ids field, 2
@@ -28,6 +29,9 @@ Rounds.flag   = 2;
 Rounds.ids    = {'round01' 'round02' 'round03' 'round04' 'round05' 'round06'};
 Rounds.regexp = 'round..';
 
+%%
+%%% Checking
+
 % Check to see if spm is on the MATLAB search path; if so remove it
 % from the search path; then check to see if PsPM is on the search
 % path; throw and error if pspm is not on the path
@@ -42,6 +46,7 @@ if isempty(pspmcheck)
     error('Please add PsPM to the MATLAB search path')
 end
 
+%%
 %%% Step 1: Importing
 
 filein = fullfile(rootdir, Subjects.ids{1}, 'BioPac', 'sub_s001_round01_ret.txt');
@@ -49,4 +54,5 @@ fileout = fullfile(pwd, 'output.txt');
 
 biopac_import(filein, fileout);
 
+%%
 %%% Step 2:
