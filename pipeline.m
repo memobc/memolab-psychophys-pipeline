@@ -3,7 +3,7 @@
 
 %%% Step 0: Study Parameters
 
-rootdir  = '';
+rootdir  = '/Volumes/Psychology/MemoLab/MICE/MICE_fMRI/Data/';
 
 % Subjects structure, with the fields:
 %   .flag   = 1 if you want to specify the ids to run in the .ids field, 2
@@ -44,6 +44,9 @@ end
 
 %%% Step 1: Importing
 
-biopac_import();
+filein = fullfile(rootdir, Subjects.ids{1}, 'BioPac', 'sub_s001_round01_ret.txt');
+fileout = fullfile(pwd, 'output.txt');
+
+biopac_import(filein, fileout);
 
 %%% Step 2:
