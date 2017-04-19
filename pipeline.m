@@ -42,22 +42,25 @@ global verbose
 verbose = true;
 
 %%
-%%% Checking
-% Check to see if spm is on the MATLAB search path; if so remove it
-% from the search path; then check to see if PsPM is on the search
-% path; throw and error if pspm is not on the path
+%%% Pipeline Prep
 
-spmcheck = which('spm');
-if ~isempty(spmcheck)
-    [spmpath,~,~] = fileparts(spmcheck);
-    rmpath(genpath(spmpath));
-end
-
+% Check to see if PsPM is on the search path; throw and error if pspm is 
+% not on the path
 pspmcheck = which('pspm');
 if isempty(pspmcheck)
     error('Please add PsPM to the MATLAB search path')
 end
 [pspmpath, ~, ~]   = fileparts(pspmcheck);
+
+% Check to see if the helper subfolder is on the matlab search path; if it
+% isn't, add it to the matlabsearchpath
+pipeline_path    = fileparts(mfilename('fullpath'));
+helper_subfolder = fullfile(pipeline_path, 'helper');
+matlabsearchpath = path;
+matches          = strfind(matlabsearchpath, helper_subfolder);
+if isempty(matches)
+    addpath(helper_subfolder);
+end
 
 %%
 %%% Task 1: Importing
@@ -79,23 +82,15 @@ for curSubj = Subjects.ids
                 fprintf('\nTask 1: Importing Data ...\n') 
             end
             
-            % Add the SPM subfolder of the PsPM toolbox to the searchpath
-            % (so we can use SPM select)
-            addpath(fullfile(pspmpath, 'SPM')); addpath(genpath(fullfile(pspmpath, 'matlabbatch'))); 
-            
             % Grab the biopac data txt file for this Subject/Round/Task
             % using spm_select and a regular expression
-            filein  = spm_select('FPList', curSubjBiopacDir, ['.*' curRound{:} '.*' lower(curTask{:}) '\.txt']); %'sub_s001_round01_ret.txt'
-            
-            % Remove the SPM subfolder of the PsPM toolbox from the
-            % searchpath, to avoid screwing up PsPM functions
-            rmpath(fullfile(pspmpath, 'SPM'));
+            filein  = kyles_spm_select('FPList', curSubjBiopacDir, ['.*' curRound{:} '.*' lower(curTask{:}) '\.txt']); %'sub_s001_round01_ret.txt'
             
             % Create the output filename
             fileout = fullfile(Analysis.dir, curSubj{:}, [curSubj{:} '_' curRound{:} '_' lower(curTask{:}) '.txt']);
             
             % Import the biopac data for this Subject/Round/Task
-            pspm_filename.(curSubj{:}).(curTask{:}).(curRound{:}) = biopac_import(filein, fileout);
+            pspm_filename.(curSubj{:}).(curTask{:}).(curRound{:}) = biopac_import(filein{:}, fileout);
             
         end
     end

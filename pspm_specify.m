@@ -11,12 +11,7 @@ global verbose
 % 2.) The only .*.csv files that are in the behav_data_dir are the
 %     behavioral data files
 
-pspmdir = which('pspm');
-[path, ~, ~] = fileparts(pspmdir);
-
-addpath(fullfile(path, 'SPM'))
-behav_data_files = cellstr(spm_select('FPList', behav_data_dir, '.*\.csv'));
-rmpath(fullfile(path, 'SPM'))
+behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*\.csv');
 
 numTrialTypes    = 4;
 round            = 0;
@@ -96,7 +91,6 @@ for curDataFile = behav_data_files'
 
 end
 
-addpath(fullfile(path, 'SPM'))
-modelfiles = cellstr(spm_select('FPList', fullfile(Analysis.dir, curSubj), '^Round.*\.mat'));
+modelfiles = kyles_spm_select('FPList', fullfile(Analysis.dir, curSubj), '^Round.*\.mat');
 
 end

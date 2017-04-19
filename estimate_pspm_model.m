@@ -11,7 +11,7 @@ function estimate_pspm_model(datafile, modelfile, Analysis)
     matlabbatch = set_model_batch(datafile, modelfile, Analysis.name, Analysis.dir);
     
     % run this job through pspm's version of the SPM job manager
-    scr_jobman('interactive', matlabbatch)
+    scr_jobman('run', matlabbatch)
 
     function matlabbatch = set_model_batch(filename, modelfile, name, dir)
         
