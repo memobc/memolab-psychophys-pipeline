@@ -11,9 +11,9 @@ global verbose
 % 2.) The only .*.csv files that are in the behav_data_dir are the
 %     behavioral data files
 
-behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*\.csv');
+behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*round0[0-4].*\.csv');
 
-numTrialTypes    = 4;
+numTrialTypes    = 2;
 round            = 0;
 
 for curDataFile = behav_data_files'
@@ -42,37 +42,21 @@ for curDataFile = behav_data_files'
     % for each trial...
     for curTrial = 1:height(data)
         
-        if strcmp(data.Condition{curTrial}, 'neut/same')
+        if regexp(data.Condition{curTrial}, 'neut', 'ONCE')
             
             trial_type_id = 1;
             counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'neut-same';
+            names{trial_type_id}                             = 'Neutral_Trials';
             onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
             durations{trial_type_id}(counter(trial_type_id)) = 0;
             
-        elseif strcmp(data.Condition{curTrial}, 'neut/shift')
+        elseif regexp(data.Condition{curTrial}, 'neg', 'ONCE')
             
             trial_type_id = 2;
             counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'neut-shift';
+            names{trial_type_id}                             = 'Negative_Trials';
             onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
             durations{trial_type_id}(counter(trial_type_id)) = 0;     
-            
-        elseif strcmp(data.Condition{curTrial}, 'neg/same')
-            
-            trial_type_id = 3;
-            counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'neg-same';
-            onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
-            durations{trial_type_id}(counter(trial_type_id)) = 0;   
-            
-        elseif strcmp(data.Condition{curTrial}, 'neg/shift')
-            
-            trial_type_id = 4;
-            counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'neg-shift';
-            onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
-            durations{trial_type_id}(counter(trial_type_id)) = 0;  
             
         end
         
