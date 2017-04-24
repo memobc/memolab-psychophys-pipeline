@@ -5,31 +5,41 @@
 %%% Study Parameters
 % Define study and computer specific parameters
 
-% Where is the MICE Biopac data on your computer?
+% Where dooes the MICE Biopac data live on your computer?
 rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/Data/';
 
 % Subjects structure, with the fields:
 %   .flag   = true if you want to grab subject IDs dynamically using a 
 %             regular expression, false if you want to hardcode subject ids
-%             into the .ids field
-%   .ids    = a 1 x n cell array of subject ids strings to run
+%             into the .ids field. The regular expression method can be
+%             useful if you simply want to run all available subjects and 
+%             do not want to have to hardcode them all into the .ids field.
+%   .ids    = a 1 x n cell array of subject ids strings to run. Note, when
+%             running with the .flag field set to true, this field gets
+%             overwritten with the id's identified using the regular
+%             expression.
 %   .regexp = a regular expression, used to grab subjects ids dynamically
 Subjects.flag   = true;
 Subjects.ids    = {'s001'};
 Subjects.regexp = '^s...';
 
 % A 1 x n cell array of the different tasks to analyze (e.g., encoding,
-% retrieval)
-Tasks         = {'Enc'}; % Ret
+% item retrieval, emotion retrieval).
+Tasks         = {'enc'}; % ret
 
 % Rounds structure, with the fields:
 %   .flag   = true if you want to grab round IDs dynamically using a 
 %             regular expression, false if you want to hardcode round ids
-%             into the .ids field
+%             into the .ids field. The regular expression method is useful
+%             when you have subjects that have a different number of runs
+%             for a particular task. Hardcoding the round IDs makes the
+%             assumption that ALL subjects have those rounds, which may or
+%             may not always be true.
 %   .ids    = a 1 x n cell array of strings detailing the names of the
 %             rounds
 %   .regexp = a regular expression, used to dynamically figure out round
-%             IDs from the biophys filenames
+%             IDs from the biophys filenames. Google regular expressions,
+%             see spm_select's filter option
 Rounds.flag   = true;
 Rounds.ids    = {'round01' 'round02' 'round03' 'round04'};
 Rounds.regexp = 'round..';
@@ -37,14 +47,16 @@ Rounds.regexp = 'round..';
 % Analysis structure, with the fileds:
 %   .root = the root directory where this analysis will be saved
 %   .name = name of the current analysis. A subfolder will be created
-%           within .root with this name
-%   .dir  = the directory holding this analysis
+%           within .root with this name. The model .mat file will also have
+%           this name.
+%   .dir  = the directory holding this analysis, hardcoded here as a
+%           subfolder within the root directory
 Analysis.root = pwd;
-Analysis.name = 'test';
+Analysis.name = 'WhiteNoiseTrials_vs_AllOtherTrials_Model';
 Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 
 % Verbose. Do you want the pipeline to print text to the Command Window or
-% run silently?
+% run silently? TRUE = gives user various periodic updates
 global verbose
 verbose = true;
 
@@ -83,7 +95,7 @@ end
 
 % Grab subject IDs using a regular expression
 if Subjects.flag
-    Subjects.ids = cellstr(spm_select('List', rootdir, 'dir', Subjects.regexp))';
+    Subjects.ids = kyles_spm_select('List', rootdir, 'dir', Subjects.regexp)';
 end
 
 %%
@@ -106,7 +118,7 @@ for curSubj = Subjects.ids
         % filenames
         if Rounds.flag
             % Biophys files for this task
-            biophys_files   = cellstr(spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
+            biophys_files   = cellstr(kyles_spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
             % Round ids extracted from the filenames
             Rounds.ids      = regexp(biophys_files, Rounds.regexp, 'match')';
             % "Unnesting" the resulting cell array from regexp function.
@@ -127,7 +139,10 @@ for curSubj = Subjects.ids
             filein  = kyles_spm_select('FPList', curSubjBiopacDir, ['.*' curRound{:} '.*' lower(curTask{:}) '\.txt$']);
             
             % Create the output filename
-            fileout = fullfile(Analysis.dir, curSubj{:}, [curSubj{:} '_' curRound{:} '_' lower(curTask{:}) '.txt']);
+            if ~exist(fullfile(curSubjBiopacDir, 'processed'), 'dir')
+                mkdir(fullfile(curSubjBiopacDir, 'processed'))
+            end
+            fileout = fullfile(curSubjBiopacDir, 'processed', [curSubj{:} '_' curRound{:} '_' lower(curTask{:}) '.mat']);
             
             % Import the biopac data for this Subject/Round/Task
             pspm_filename.(curSubj{:}).(curTask{:}).(curRound{:}) = biopac_import(filein{:}, fileout);
@@ -139,7 +154,7 @@ end
 %%
 %%% Task: Visually inspect and reject
 
-for curSubj = Subjects.ids   
+for curSubj = Subjects.ids
     for curTask = Tasks
         
         % If using the Rounds regular expression option, figure out the number
