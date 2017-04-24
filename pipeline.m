@@ -162,7 +162,7 @@ for curSubj = Subjects.ids
         % filenames
         if Rounds.flag
             % Biophys files for this task
-            biophys_files   = cellstr(spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
+            biophys_files   = cellstr(kyles_spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
             % Round ids extracted from the filenames
             Rounds.ids      = regexp(biophys_files, Rounds.regexp, 'match')';
             % "Unnesting" the resulting cell array from regexp function.
