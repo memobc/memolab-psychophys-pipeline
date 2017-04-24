@@ -42,22 +42,48 @@ for curDataFile = behav_data_files'
     % for each trial...
     for curTrial = 1:height(data)
         
-        if regexp(data.Condition{curTrial}, 'neut', 'ONCE')
+        switch Analysis.name
             
-            trial_type_id = 1;
-            counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'Neutral_Trials';
-            onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
-            durations{trial_type_id}(counter(trial_type_id)) = 0;
-            
-        elseif regexp(data.Condition{curTrial}, 'neg', 'ONCE')
-            
-            trial_type_id = 2;
-            counter(trial_type_id)                           = counter(trial_type_id) + 1;
-            names{trial_type_id}                             = 'Negative_Trials';
-            onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
-            durations{trial_type_id}(counter(trial_type_id)) = 0;     
-            
+            case 'EmoTrials_vs_NeuTrials_Model'
+        
+                if regexp(data.Condition{curTrial}, 'neut', 'ONCE')
+
+                    trial_type_id = 1;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Neutral_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;
+
+                elseif regexp(data.Condition{curTrial}, 'neg', 'ONCE')
+
+                    trial_type_id = 2;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Negative_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;     
+
+                end
+                
+            case 'WhiteNoiseTrials_vs_AllOtherTrials_Model'
+        
+                if data.Noise(curTrial) == 1
+
+                    trial_type_id = 1;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'WhiteNoise_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;
+
+                else
+
+                    trial_type_id = 2;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'AllOther_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;     
+
+                end                
+                
         end
         
     end
