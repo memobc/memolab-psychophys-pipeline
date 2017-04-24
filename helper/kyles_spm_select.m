@@ -23,15 +23,26 @@ switch flag
     case 'FPList'
         
         % Expand input arguments
-        directory         = varargin{1};
-        regularExpression = varargin{2};
+        if strcmp(varargin{2}, 'dir')
+            directory         = varargin{1};
+            search4dirs       = true;
+            regularExpression = varargin{3};            
+        else
+            directory         = varargin{1};
+            search4dirs        = false;
+            regularExpression = varargin{2};
+        end
         
         %%% Algorithm %%%
         
         % Step 1: Find all files in the directory
         
             files_structure = dir(directory);                                   % see dir documentation
-            files_structure = files_structure(~vertcat(files_structure.isdir)); % remove all of the subdirectories, leaving only files
+            if search4dirs
+                files_structure = files_structure(vertcat(files_structure.isdir)); % remove all of the files, leaving only subdirectories
+            else
+                files_structure = files_structure(~vertcat(files_structure.isdir)); % remove all of the subdirectories, leaving only files          
+            end
             file_names      = {files_structure.name}';                          % create a cell array of just the filenames
         
         % Step 2: Find all files that match the regularExpression
@@ -52,5 +63,48 @@ switch flag
         
             % append directory to matched_file_names
             files = strcat(directory, filesep, matched_file_names);
+            
+    case 'List'
+        
+        % Expand input arguments
+        if strcmp(varargin{2}, 'dir')
+            directory         = varargin{1};
+            search4dirs       = true;
+            regularExpression = varargin{3};            
+        else
+            directory         = varargin{1};
+            search4dirs        = false;
+            regularExpression = varargin{2};
+        end
+        
+        %%% Algorithm %%%
+        
+        % Step 1: Find all files in the directory
+        
+            files_structure = dir(directory);                                   % see dir documentation
+            if search4dirs
+                files_structure = files_structure(vertcat(files_structure.isdir)); % remove all of the files, leaving only subdirectories
+            else
+                files_structure = files_structure(~vertcat(files_structure.isdir)); % remove all of the subdirectories, leaving only files
+            end
+            file_names      = {files_structure.name}';                          % create a cell array of just the filenames
+        
+        % Step 2: Find all files/dirs that match the regularExpression
+        
+            % use MATLAB's regexp to find matches of the regular expression
+            regexp_matches           = regexp(file_names, regularExpression);
+            
+            % convert the messy regexp_matches cell array to a logical
+            % vector (i.e., a 'filter')
+            regularExpression_filter = ~cellfun(@isempty, regexp_matches);
+
+            % use the above filter to grab just the matching filenames
+            matched_file_names       = file_names(regularExpression_filter);
+        
+        % Step 3: Return all of the matches files as a character array. 
+        % See spm_select
+        
+            % matched_file_names
+            files = matched_file_names;
         
 end
