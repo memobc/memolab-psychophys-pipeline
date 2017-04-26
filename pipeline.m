@@ -51,8 +51,8 @@ Rounds.regexp = 'round..';
 %           this name.
 %   .dir  = the directory holding this analysis, hardcoded here as a
 %           subfolder within the root directory
-Analysis.root = pwd;
-Analysis.name = 'WhiteNoiseTrials_vs_AllOtherTrials_Model';
+Analysis.root = [pwd filesep 'models'];
+Analysis.name = 'Valence_and_Noise'; % WhiteNoise_vs_AllOther; Emotional_vs_Neutral_Trials; Valence_and_Noise
 Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 
 % Verbose. Do you want the pipeline to print text to the Command Window or
@@ -96,6 +96,7 @@ end
 % Grab subject IDs using a regular expression
 if Subjects.flag
     Subjects.ids = kyles_spm_select('List', rootdir, 'dir', Subjects.regexp)';
+    assert(~isempty(Subjects.ids), 'Could not find any subject subfolders with the regular expression')
 end
 
 %%
