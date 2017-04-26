@@ -219,7 +219,7 @@ for curSubj = Subjects.ids
         datafiles      = struct2cell(pspm_filename.(curSubj{:}).(curTask{:}));
         multicondfiles = modelfiles.(curSubj{:}).(curTask{:});
         
-        estimate_pspm_model(datafiles, multicondfiles, Analysis, curSubj{:});
+        pspm_estimate_model(datafiles, multicondfiles, Analysis, curSubj{:});
         
     end
 end
