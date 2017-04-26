@@ -219,7 +219,13 @@ for curSubj = Subjects.ids
         datafiles      = struct2cell(pspm_filename.(curSubj{:}).(curTask{:}));
         multicondfiles = modelfiles.(curSubj{:}).(curTask{:});
         
-        pspm_estimate_model(datafiles, multicondfiles, Analysis, curSubj{:});
+        modelTypes     = {'001_filters_off' '002_lowpass_only' '003_highpass_only' '004_filters_on'};
+        
+        for curType = modelTypes
+        
+            pspm_estimate_model(datafiles, multicondfiles, Analysis, curSubj{:}, curType{:});
+            
+        end
         
     end
 end
