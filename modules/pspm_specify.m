@@ -13,7 +13,15 @@ global verbose
 
 behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*round0[0-4].*\.csv');
 
-numTrialTypes    = 2;
+switch Analysis.name
+    
+    case 'Emotional_vs_Neutral_Trials'
+        numTrialTypes    = 2;
+    case 'WhiteNoise_vs_AllOther'
+        numTrialTypes    = 2;
+    case 'Valence_and_Noise'
+        numTrialTypes    = 4;
+end
 round            = 0;
 
 for curDataFile = behav_data_files'
@@ -44,7 +52,7 @@ for curDataFile = behav_data_files'
         
         switch Analysis.name
             
-            case 'EmoTrials_vs_NeuTrials_Model'
+            case 'Emotional_vs_Neutral_Trials'
         
                 if regexp(data.Condition{curTrial}, 'neut', 'ONCE')
 
@@ -64,7 +72,7 @@ for curDataFile = behav_data_files'
 
                 end
                 
-            case 'WhiteNoiseTrials_vs_AllOtherTrials_Model'
+            case 'WhiteNoise_vs_AllOther'
         
                 if data.Noise(curTrial) == 1
 
@@ -82,7 +90,43 @@ for curDataFile = behav_data_files'
                     onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
                     durations{trial_type_id}(counter(trial_type_id)) = 0;     
 
-                end                
+                end
+                
+            case 'Valence_and_Noise'
+                
+                if ~isempty(regexp(data.Condition{curTrial}, 'neg', 'ONCE')) && data.Noise(curTrial) == 1
+
+                    trial_type_id = 1;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'WhiteNoise';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;
+
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neg', 'ONCE')) && data.Noise(curTrial) ~= 1
+
+                    trial_type_id = 2;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Negative_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0; 
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neu', 'ONCE')) && data.Noise(curTrial) == 3
+
+                    trial_type_id = 3;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'NeutralTone';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0; 
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neu', 'ONCE')) && data.Noise(curTrial) ~= 1
+
+                    trial_type_id = 4;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Neutral_Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;                     
+
+                end
                 
         end
         
