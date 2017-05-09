@@ -19,8 +19,8 @@ rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/Data/';
 %             overwritten with the id's identified using the regular
 %             expression.
 %   .regexp = a regular expression, used to grab subjects ids dynamically
-Subjects.flag   = true;
-Subjects.ids    = {'s001'};
+Subjects.flag   = false;
+Subjects.ids    = {'s001' 's003'};
 Subjects.regexp = '^s...';
 
 % A 1 x n cell array of the different tasks to analyze (e.g., encoding,
@@ -52,7 +52,7 @@ Rounds.regexp = 'round..';
 %   .dir  = the directory holding this analysis, hardcoded here as a
 %           subfolder within the root directory
 Analysis.root = [pwd filesep 'models'];
-Analysis.name = 'Valence_and_Noise'; % WhiteNoise_vs_AllOther; Emotional_vs_Neutral_Trials; Valence_and_Noise
+Analysis.name = 'Emotional_vs_Neutral_Trials'; % WhiteNoise_vs_AllOther; Emotional_vs_Neutral_Trials; Valence_and_Noise
 Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 
 % Verbose. Do you want the pipeline to print text to the Command Window or
@@ -156,7 +156,11 @@ end
 %%% Task: Visually inspect and reject
 
 for curSubj = Subjects.ids
-    for curTask = Tasks
+    
+    % The current subject's biopac directory
+    curSubjBiopacDir = fullfile(rootdir, curSubj{:}, 'BioPac');     
+    
+    for curTask = Tasks        
         
         % If using the Rounds regular expression option, figure out the number
         % of rounds this participant has for this task from the bio_phys
