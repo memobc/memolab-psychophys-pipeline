@@ -11,7 +11,7 @@ global verbose
 % 2.) The only .*.csv files that are in the behav_data_dir are the
 %     behavioral data files
 
-behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*round0[0-4].*\.csv');
+behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*round0.*\.csv');
 
 switch Analysis.name
     
@@ -141,10 +141,10 @@ for curDataFile = behav_data_files'
         mkdir(Analysis.dir, curSubj)
     end    
     
-    save(fullfile(Analysis.dir, curSubj, ['Round' num2str(round) '_multiple_conditions.mat']), 'names', 'onsets', 'durations')            
+    save(fullfile(Analysis.dir, curSubj, ['round' num2str(round, '%02d') '_multiple_conditions.mat']), 'names', 'onsets', 'durations')            
 
 end
 
-modelfiles = kyles_spm_select('FPList', fullfile(Analysis.dir, curSubj), '^Round.*\.mat');
+modelfiles = kyles_spm_select('FPList', fullfile(Analysis.dir, curSubj), '^round.*\.mat');
 
 end
