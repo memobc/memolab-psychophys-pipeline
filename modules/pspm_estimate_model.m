@@ -8,7 +8,7 @@ function pspm_estimate_model(datafile, modelfile, Analysis, currentSubjectID, mo
     end
 
     % set the matlabbatch structure (see subfunction below)
-    matlabbatch = set_model_batch(datafile, modelfile, modelType, fullfile(Analysis.dir, currentSubjectID));
+    matlabbatch = set_model_batch(datafile, modelfile, [currentSubjectID '_' modelType], fullfile(Analysis.dir, currentSubjectID));
     
     % run this job through pspm's version of the SPM job manager
     scr_jobman('run', matlabbatch)
