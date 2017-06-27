@@ -6,7 +6,7 @@
 % Define study and computer specific parameters
 
 % Where dooes the MICE Biopac data live on your computer?
-rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/Data/';
+rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/data/';
 
 % Subjects structure, with the fields:
 %   .flag   = true if you want to grab subject IDs dynamically using a 
@@ -20,8 +20,10 @@ rootdir  = '/Volumes/memolab/MICE/MICE_fMRI/Data/';
 %             expression.
 %   .regexp = a regular expression, used to grab subjects ids dynamically
 Subjects.flag   = false;
-Subjects.ids    = {'s001' 's003'};
-Subjects.regexp = '^s...';
+Subjects.ids    = {'sub-s001','sub-s003','sub-s004','sub-s005','sub-s006',...
+                   'sub-s007','sub-s008','sub-s009','sub-s010','sub-s011',...
+                   'sub-s012','sub-s013','sub-s014'}; % excludes subject sub-s002
+Subjects.regexp = '^sub-s0..';
 
 % A 1 x n cell array of the different tasks to analyze (e.g., encoding,
 % item retrieval, emotion retrieval).
@@ -41,7 +43,7 @@ Tasks         = {'enc'}; % ret
 %             IDs from the biophys filenames. Google regular expressions,
 %             see spm_select's filter option
 Rounds.flag   = true;
-Rounds.ids    = {'round01' 'round02' 'round03' 'round04'};
+Rounds.ids    = {'round01','round02','round03','round04'};
 Rounds.regexp = 'round..';
 
 % Analysis structure, with the fileds:
@@ -59,6 +61,10 @@ Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 % run silently? TRUE = gives user various periodic updates
 global verbose
 verbose = true;
+
+% visualize. Visually inspect and reject the raw data? True = yes, false =
+% no.
+visualize = false;
 
 %%
 %%% Pipeline Prep
@@ -104,6 +110,9 @@ end
 
 for curSubj = Subjects.ids
     
+    % current subject ID without the BIDS 'sub-'
+    clean_curSubj = regexprep(curSubj, 'sub-', '');
+    
     % If the analysis directory doesn't have a subject subfolder, create it
     if ~exist(fullfile(Analysis.dir, curSubj{:}), 'dir')
         mkdir(fullfile(Analysis.dir, curSubj{:}))
@@ -118,15 +127,24 @@ for curSubj = Subjects.ids
         % of rounds this participant has for this task from the bio_phys
         % filenames
         if Rounds.flag
+            
             % Biophys files for this task
             biophys_files   = cellstr(kyles_spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
+            
             % Round ids extracted from the filenames
             Rounds.ids      = regexp(biophys_files, Rounds.regexp, 'match')';
+            
+            % This must be true, otherwise either one of the regular
+            % expressions is wrong
+            assert(~isempty(Rounds.ids), 'Could not find any rounds with the specified regular expression')
+            
             % "Unnesting" the resulting cell array from regexp function.
             % See unNest_cell_array.m
             Rounds.ids      = unNest_cell_array(Rounds.ids);
+            
             % Sort the Round IDs so that they are in order
             Rounds.ids      = sort(Rounds.ids);
+            
         end
         
         for curRound = Rounds.ids
@@ -146,7 +164,7 @@ for curSubj = Subjects.ids
             fileout = fullfile(curSubjBiopacDir, 'processed', [curSubj{:} '_' curRound{:} '_' lower(curTask{:}) '.mat']);
             
             % Import the biopac data for this Subject/Round/Task
-            pspm_filename.(curSubj{:}).(curTask{:}).(curRound{:}) = biopac_import(filein{:}, fileout);
+            pspm_filename.(clean_curSubj{:}).(curTask{:}).(curRound{:}) = biopac_import(filein{:}, fileout);
             
         end
     end
@@ -155,42 +173,48 @@ end
 %%
 %%% Task: Visually inspect and reject
 
-for curSubj = Subjects.ids
+if visualize
     
-    % The current subject's biopac directory
-    curSubjBiopacDir = fullfile(rootdir, curSubj{:}, 'BioPac');     
-    
-    for curTask = Tasks        
-        
-        % If using the Rounds regular expression option, figure out the number
-        % of rounds this participant has for this task from the bio_phys
-        % filenames
-        if Rounds.flag
-            % Biophys files for this task
-            biophys_files   = cellstr(kyles_spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
-            % Round ids extracted from the filenames
-            Rounds.ids      = regexp(biophys_files, Rounds.regexp, 'match')';
-            % "Unnesting" the resulting cell array from regexp function.
-            % See unNest_cell_array.m
-            Rounds.ids      = unNest_cell_array(Rounds.ids);
-            % Sort the Round IDs so that they are in order
-            Rounds.ids      = sort(Rounds.ids);
-        end
-        
-        for curRound = Rounds.ids
+    for curSubj = Subjects.ids
 
-            if verbose
-                fprintf('\nTask 2: Visual Inspection...\n')
-            end
-            pspm_inspect(pspm_filename.(curSubj{:}).(curTask{:}).(curRound{:}));
+        % current subject ID without the BIDS 'sub-'
+        clean_curSubj = regexprep(curSubj, 'sub-', '');    
 
-            STR = input('Accept Session? y/n: ', 's');
-            if strcmp(STR, 'y')
-            elseif strcmp(STR, 'n')
-                fprintf('\nRemoving %s...\n', curRound{:})
-                pspm_filename.(curSubj{:}).(curTask{:}) = rmfield(pspm_filename.(curSubj{:}).(curTask{:}), curRound{:});
+        % The current subject's biopac directory
+        curSubjBiopacDir = fullfile(rootdir, curSubj{:}, 'BioPac');     
+
+        for curTask = Tasks        
+
+            % If using the Rounds regular expression option, figure out the number
+            % of rounds this participant has for this task from the bio_phys
+            % filenames
+            if Rounds.flag
+                % Biophys files for this task
+                biophys_files   = cellstr(kyles_spm_select('List', curSubjBiopacDir, [lower(curTask{:}) '\.txt$']));
+                % Round ids extracted from the filenames
+                Rounds.ids      = regexp(biophys_files, Rounds.regexp, 'match')';
+                % "Unnesting" the resulting cell array from regexp function.
+                % See unNest_cell_array.m
+                Rounds.ids      = unNest_cell_array(Rounds.ids);
+                % Sort the Round IDs so that they are in order
+                Rounds.ids      = sort(Rounds.ids);
             end
 
+            for curRound = Rounds.ids
+
+                if verbose
+                    fprintf('\nTask 2: Visual Inspection...\n')
+                end
+                pspm_inspect(pspm_filename.(clean_curSubj{:}).(curTask{:}).(curRound{:}));
+
+                STR = input('Accept Session? y/n: ', 's');
+                if strcmp(STR, 'y')
+                elseif strcmp(STR, 'n')
+                    fprintf('\nRemoving %s...\n', curRound{:})
+                    pspm_filename.(clean_curSubj{:}).(curTask{:}) = rmfield(pspm_filename.(clean_curSubj{:}).(curTask{:}), curRound{:});
+                end
+
+            end
         end
     end
 end
@@ -199,13 +223,17 @@ end
 %%% Task: Specify Model
 
 for curSubj = Subjects.ids
+    
+    % current subject ID without the BIDS 'sub-'
+    clean_curSubj = regexprep(curSubj, 'sub-', '');    
+    
     for curTask = Tasks
         
         if verbose
             fprintf('\nTask 5: Specifying Model...\n')
         end
-        behav_data = fullfile(rootdir, curSubj{:}, curTask{:});
-        modelfiles.(curSubj{:}).(curTask{:}) = pspm_specify(behav_data, curSubj{:}, Analysis);
+        behav_data_dir = fullfile(rootdir, curSubj{:}, curTask{:});
+        modelfiles.(clean_curSubj{:}).(curTask{:}) = pspm_specify(behav_data_dir, curSubj{:}, Analysis);
         
     end
 end
@@ -214,19 +242,32 @@ end
 %%% Task: Estimate Model
 
 for curSubj = Subjects.ids
+    
+    % current subject ID without the BIDS 'sub-'
+    clean_curSubj = regexprep(curSubj, 'sub-', '');
+    
     for curTask = Tasks
         
         if verbose
-            fprintf('\nTask 6: Modeling...\n')
+            fprintf('\nTask 6: Estimating Model...\n')
         end
         
-        datafiles      = struct2cell(pspm_filename.(curSubj{:}).(curTask{:}));
-        multicondfiles = modelfiles.(curSubj{:}).(curTask{:});
+        datafiles      = struct2cell(pspm_filename.(clean_curSubj{:}).(curTask{:}));
+        multicondfiles = modelfiles.(clean_curSubj{:}).(curTask{:});
+        
+        if length(datafiles) ~= length(multicondfiles)
+           % This is the case where there are more behavioral files then
+           % biopac files or visa-versa. If this is the case, we can only
+           % model the files that we have.
+           
+            [datafiles, multicondfiles] = match_files(datafiles, multicondfiles);
+           
+        end
         
         modelTypes     = {'001_filters_off' '002_lowpass_only' '003_highpass_only' '004_filters_on'};
         
         for curType = modelTypes
-        
+            
             pspm_estimate_model(datafiles, multicondfiles, Analysis, curSubj{:}, curType{:});
             
         end
