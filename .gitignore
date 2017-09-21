@@ -3,3 +3,4 @@ scr_output.mat
 dscr_output.mat
 models/*
 *.m~
+MICE_SCR_overview*.png
