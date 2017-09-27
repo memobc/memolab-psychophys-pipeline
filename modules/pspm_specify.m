@@ -1,4 +1,4 @@
-function [modelfiles] = pspm_specify(behav_data_dir, curSubj, Analysis)
+function [modelfiles] = pspm_specify(behav_data_dir, curSubj, Analysis, RE)
 
 global verbose
 
@@ -11,7 +11,7 @@ global verbose
 % 2.) The only .*.csv files that are in the behav_data_dir are the
 %     behavioral data files
 
-behav_data_files = kyles_spm_select('FPList', behav_data_dir, '.*round0.*\.csv');
+behav_data_files = kyles_spm_select('FPList', behav_data_dir, [RE '.*\.csv']);
 
 switch Analysis.name
     
