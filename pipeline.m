@@ -80,7 +80,7 @@ Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 % global variable so that it is available for all functions and modules in
 % the pipeline.
 global verbose
-verbose = false;
+verbose = true;
 
 % visualize. Visually inspect and reject the raw data? True = yes, false =
 % no.
@@ -272,6 +272,7 @@ for curSubj = Subjects.ids
         modelfiles.(clean_curSubj{:}).(curTask{:}) = pspm_specify(behav_data_dir, curSubj{:}, Analysis, Rounds.regexp);
         
     end
+    
 end
 
 %%
@@ -322,18 +323,28 @@ end
 
 % for each subject...
 for curSubj = Subjects.ids
-    
-    % current subject ID without the BIDS 'sub-'
-    clean_curSubj = regexprep(curSubj, 'sub-', '');
-    
-    % for each task..
-    for curTask = Tasks
-        
-        if verbose
-            fprintf('\nTask 7: Running Contrasts...\n')
-        end
-        
-        pspm_constrasts(modelfiles.(clean_curSubj{:}).(curTask{:}));
-        
+
+    if verbose
+        fprintf('\nTask 7: Running Contrasts...\n')
     end
+
+    glmdir = fullfile(Analysis.dir, curSubj{:});
+
+    glmfile = kyles_spm_select('FPList', glmdir, '004_filters_on');
+
+    pspm_contrasts(glmfile{:});
+        
 end
+
+%%
+%==========================================================================
+%                       One Sample Ts
+%==========================================================================
+% Run one sample T tests on the contrasts defined in the previous step
+
+if verbose
+    fprintf('\nTask 8: One Sample Ts...\n')
+end
+
+glmfiles = spm_select('FPListRec', Analysis.dir, '004_filters');
+pspm_onesamplet(glmfiles, Analysis.dir)
