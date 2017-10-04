@@ -4,7 +4,7 @@ function MICE_scr_overview(task)
 % harcoded parameters
 datadir   = '/Volumes/memolab/MICE/MICE_fMRI/data';
 
-datadirs  = cellstr(spm_select('FPList', datadir, 'dir', '^sub-s0(?!02|18|21|23|24|25|29|31)'));
+datadirs  = cellstr(spm_select('FPList', datadir, 'dir', '^sub-s0(?!15|21|23|29|31)'));
 
 names = regexp(datadirs, 'sub-s...', 'match');
 names = unNest_cell_array(names);
@@ -43,6 +43,11 @@ function output = concatenate_sessions(directory, task)
     % - median filters
     % each RUN of the data
     ext       = @(x) medfilt1(x.data{1} - mean(x.data{1}), 10);
+    
+    % define a temporary function that:
+    % - extracts
+    % each RUN of the data
+    %ext       = @(x) x.data{1};
 
     % use the above defined function to extract, remove mean, and
     % median filter each run of the data
