@@ -32,8 +32,11 @@ Subjects.ids    = {'sub-s001','sub-s002','sub-s003','sub-s004','sub-s005',...
                    'sub-s016','sub-s017','sub-s018','sub-s019','sub-s020',...
                    'sub-s021','sub-s022','sub-s023','sub-s024','sub-s025',...
                    'sub-s026','sub-s027','sub-s028','sub-s029','sub-s030'...
-                   'sub-s031'};
-Subjects.regexp = '^sub-s0(?!02|15|18|21|23|24|25|29|31)'; % excludes subjects 2,15,18,21,23,24,25,29,31
+                   'sub-s031'}; % all subjects
+Subjects.regexp = '^sub-s0(?!15|21|23|29|31)'; % excludes subjects: 
+                                         % 15 --> no BioPac Data
+                                         % 21 --> Round Labeling Messed Up
+                                         % 23 --> Missing Data
 
 % A 1 x n cell array of the different tasks to analyze (e.g., encoding,
 % item retrieval, emotion retrieval). The scripts searches the functional
@@ -80,7 +83,7 @@ Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 % global variable so that it is available for all functions and modules in
 % the pipeline.
 global verbose
-verbose = true;
+verbose = false;
 
 % visualize. Visually inspect and reject the raw data? True = yes, false =
 % no.
