@@ -10,23 +10,41 @@ function pspm_contrasts(modelfile)
 % Inialize nContrasts to 0
 nContrasts = 0;
 
-% White Noise vs Baseline
+% White Noise
 nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'White-Noise_vs_Baseline'; % arbitrary name of contrast
-Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' 'WhiteNoise, bf 2' }; % Parameters to be included in contrast (+)
+Contrasts(nContrasts).name     = 'White-Noise'; % arbitrary name of contrast
+Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' }; % Parameters to be included in contrast (+)
 Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
 
-% White Noise vs Tone
+% Negative-Trials
 nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'White-Noise_vs_Tone'; % name of contrast
-Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' 'WhiteNoise, bf 2' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = { 'NeutralTone, bf 1' 'NeutralTone, bf 2' }; % Parameters to be included in contrast (-)            
+Contrasts(nContrasts).name     = 'Negative-Trials'; % arbitrary name of contrast
+Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' }; % Parameters to be included in contrast (+)
+Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
 
-% Emotional vs Neutral Trials
+% Neutral-Tone
 nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'Emotional-Trials_vs_Neutral-Trials'; % name of contrast
-Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' 'Negative_Trials, bf 2' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = { 'Neutral_Trials, bf 1' 'Neutral_Trials, bf 2'}; % Parameters to be included in contrast (-)
+Contrasts(nContrasts).name     = 'Neutral-Tone'; % arbitrary name of contrast
+Contrasts(nContrasts).positive = { 'NeutralTone, bf 1' }; % Parameters to be included in contrast (+)
+Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+
+% Neutral-Trials
+nContrasts = nContrasts + 1;
+Contrasts(nContrasts).name     = 'Neutral-Trials'; % arbitrary name of contrast
+Contrasts(nContrasts).positive = { 'Neutral_Trials, bf 1' }; % Parameters to be included in contrast (+)
+Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+
+% % White Noise vs Tone
+% nContrasts = nContrasts + 1;
+% Contrasts(nContrasts).name     = 'White-Noise_vs_Tone'; % name of contrast
+% Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' }; % Parameters to be included in contrast (+)
+% Contrasts(nContrasts).negative = { 'NeutralTone, bf 1' }; % Parameters to be included in contrast (-)            
+% 
+% % Emotional vs Neutral Trials
+% nContrasts = nContrasts + 1;
+% Contrasts(nContrasts).name     = 'Emotional-Trials_vs_Neutral-Trials'; % name of contrast
+% Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' }; % Parameters to be included in contrast (+)
+% Contrasts(nContrasts).negative = { 'Neutral_Trials, bf 1' }; % Parameters to be included in contrast (-)
 
 % Build appropriate contrast vectors, weighting everything so that it adds
 % up to 1 and -1
