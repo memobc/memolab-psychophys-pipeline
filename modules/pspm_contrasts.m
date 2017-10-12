@@ -1,4 +1,4 @@
-function pspm_contrasts(modelfile)
+function pspm_contrasts(modelname, modelfile)
 % function for batch running contrasts in PsPM
 
 %% 
@@ -10,41 +10,73 @@ function pspm_contrasts(modelfile)
 % Inialize nContrasts to 0
 nContrasts = 0;
 
-% White Noise
-nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'White-Noise'; % arbitrary name of contrast
-Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+switch modelname
+    
+    case 'Valence_and_Noise'
 
-% Negative-Trials
-nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'Negative-Trials'; % arbitrary name of contrast
-Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        % White Noise
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'White-Noise'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
 
-% Neutral-Tone
-nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'Neutral-Tone'; % arbitrary name of contrast
-Contrasts(nContrasts).positive = { 'NeutralTone, bf 1' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        % Negative-Trials
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Negative-Trials'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
 
-% Neutral-Trials
-nContrasts = nContrasts + 1;
-Contrasts(nContrasts).name     = 'Neutral-Trials'; % arbitrary name of contrast
-Contrasts(nContrasts).positive = { 'Neutral_Trials, bf 1' }; % Parameters to be included in contrast (+)
-Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        % Neutral-Tone
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Neutral-Tone'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'NeutralTone, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
 
-% % White Noise vs Tone
-% nContrasts = nContrasts + 1;
-% Contrasts(nContrasts).name     = 'White-Noise_vs_Tone'; % name of contrast
-% Contrasts(nContrasts).positive = { 'WhiteNoise, bf 1' }; % Parameters to be included in contrast (+)
-% Contrasts(nContrasts).negative = { 'NeutralTone, bf 1' }; % Parameters to be included in contrast (-)            
-% 
-% % Emotional vs Neutral Trials
-% nContrasts = nContrasts + 1;
-% Contrasts(nContrasts).name     = 'Emotional-Trials_vs_Neutral-Trials'; % name of contrast
-% Contrasts(nContrasts).positive = { 'Negative_Trials, bf 1' }; % Parameters to be included in contrast (+)
-% Contrasts(nContrasts).negative = { 'Neutral_Trials, bf 1' }; % Parameters to be included in contrast (-)
+        % Neutral-Trials
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Neutral-Trials'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Neutral_Trials, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        
+    case 'Valence_and_Noise2'
+        
+        % White-Noise
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'White-Noise'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'White-Noise, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+
+        % Negative-Trials-in-a-White-Noise-MiniBlock
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Negative-Trials-in-a-White-Noise-MiniBlock'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Negative-Trials-in-a-White-Noise-MiniBlock, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+
+        % Negative-Trials
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Negative-Trials'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Negative-Trials, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+
+        % Neutral-Tone
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Neutral-Tone'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Neutral-Tone, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        
+        % Neutral-Trials-in-a-Neutral-Tone-MiniBlock
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Neutral-Trials-in-a-Neutral-Tone-MiniBlock'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Neutral-Trials-in-a-Neutral-Tone-MiniBlock, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)
+        
+        % Neutral-Trials
+        nContrasts = nContrasts + 1;
+        Contrasts(nContrasts).name     = 'Neutral-Trials'; % arbitrary name of contrast
+        Contrasts(nContrasts).positive = { 'Neutral-Trials, bf 1' }; % Parameters to be included in contrast (+)
+        Contrasts(nContrasts).negative = {}; % Parameters to be included in contrast (-)        
+        
+end
 
 % Build appropriate contrast vectors, weighting everything so that it adds
 % up to 1 and -1

@@ -33,10 +33,16 @@ Subjects.ids    = {'sub-s001','sub-s002','sub-s003','sub-s004','sub-s005',...
                    'sub-s021','sub-s022','sub-s023','sub-s024','sub-s025',...
                    'sub-s026','sub-s027','sub-s028','sub-s029','sub-s030'...
                    'sub-s031'}; % all subjects
-Subjects.regexp = '^sub-s0(?!15|21|23|29|31)'; % excludes subjects: 
-                                         % 15 --> no BioPac Data
-                                         % 21 --> Round Labeling Messed Up
-                                         % 23 --> Missing Data
+Subjects.regexp = '^sub-s0(?!01|08|15|17|21|23|24|29|31)'; % excludes subjects:
+                                         % 01 --> Excluded fMRI
+                                         % 08 --> Excluded fMRI
+                                         % 15 --> Messed Up Run Numbering
+                                         % 17 --> excluded fMRI
+                                         % 21 --> Missing Biopac Data
+                                         % 23 --> Missing Biopac Data
+                                         % 24 --> Excluded fMRI
+                                         % 29 --> Missing Biopac Data
+                                         % 31 --> Missing Biopac Data
 
 % A 1 x n cell array of the different tasks to analyze (e.g., encoding,
 % item retrieval, emotion retrieval). The scripts searches the functional
@@ -75,7 +81,7 @@ Rounds.regexp = 'round0[^7]'; % grab all available runs EXCEPT round07
 %   .dir  = the directory holding this analysis, hardcoded here as a
 %           subfolder within the root directory
 Analysis.root = [pwd filesep 'models'];
-Analysis.name = 'Valence_and_Noise'; % WhiteNoise_vs_AllOther; Emotional_vs_Neutral_Trials; Valence_and_Noise
+Analysis.name = 'Valence_and_Noise2'; % WhiteNoise_vs_AllOther; Emotional_vs_Neutral_Trials; Valence_and_Noise
 Analysis.dir  = fullfile(Analysis.root, Analysis.name);
 
 % Verbose. Do you want the pipeline to print text to the Command Window or
@@ -335,7 +341,7 @@ for curSubj = Subjects.ids
 
     glmfile = kyles_spm_select('FPList', glmdir, '004_filters_on');
 
-    pspm_contrasts(glmfile{:});
+    pspm_contrasts(Analysis.name, glmfile{:});
         
 end
 

@@ -21,6 +21,8 @@ switch Analysis.name
         numTrialTypes    = 2;
     case 'Valence_and_Noise'
         numTrialTypes    = 4;
+    case 'Valence_and_Noise2'
+        numTrialTypes    = 6;
 end
 round            = 0;
 
@@ -34,6 +36,9 @@ for curDataFile = behav_data_files'
     
     % read in behav data
     data = readtable(curDataFile{:});
+    
+    % add a temporary mini-block column to data
+    data.MiniBlock = repelem(1:8, 4)';
     
     %%%%%%% sort the behavioral data into trial types
     
@@ -127,6 +132,61 @@ for curDataFile = behav_data_files'
                     durations{trial_type_id}(counter(trial_type_id)) = 0;                     
 
                 end
+                
+            case 'Valence_and_Noise2'
+                
+                curMiniBlock                 = data.MiniBlock(curTrial);
+                ThereWasANoiseInTheMiniBlock = ~isempty(find(data.Noise(data.MiniBlock == curMiniBlock) ~= 0, 1));
+                
+                if ~isempty(regexp(data.Condition{curTrial}, 'neg', 'ONCE')) && data.Noise(curTrial) == 1
+
+                    trial_type_id = 1;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'White-Noise';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;
+
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neg', 'ONCE')) && data.Noise(curTrial) ~= 1 && ThereWasANoiseInTheMiniBlock
+
+                    trial_type_id = 2;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Negative-Trials-in-a-White-Noise-MiniBlock';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neg', 'ONCE')) && data.Noise(curTrial) ~= 1 && ~ThereWasANoiseInTheMiniBlock
+
+                    trial_type_id = 3;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Negative-Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;                     
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neu', 'ONCE')) && data.Noise(curTrial) == 3
+
+                    trial_type_id = 4;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Neutral-Tone';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0; 
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neu', 'ONCE')) && data.Noise(curTrial) ~= 1 && ThereWasANoiseInTheMiniBlock
+
+                    trial_type_id = 5;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Neutral-Trials-in-a-Neutral-Tone-MiniBlock';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;    
+                    
+                elseif ~isempty(regexp(data.Condition{curTrial}, 'neu', 'ONCE')) && data.Noise(curTrial) ~= 1 && ~ThereWasANoiseInTheMiniBlock
+
+                    trial_type_id = 6;
+                    counter(trial_type_id)                           = counter(trial_type_id) + 1;
+                    names{trial_type_id}                             = 'Neutral-Trials';
+                    onsets{trial_type_id}(counter(trial_type_id))    = data.onset(curTrial); 
+                    durations{trial_type_id}(counter(trial_type_id)) = 0;                      
+
+                end                
                 
         end
         
